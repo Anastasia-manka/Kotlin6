@@ -4,6 +4,8 @@ import android.util.Log
 import com.example.kt6_2.data.api.NobelApi
 import com.example.kt6_2.domain.model.NobelPrize
 import com.example.kt6_2.domain.repository.NobelRepository
+import com.example.kt6_2.data.dto.toDomain
+
 
 class NobelRepositoryImpl(
     private val api: NobelApi
@@ -15,28 +17,11 @@ class NobelRepositoryImpl(
         category: String?
     ): List<NobelPrize> {
         return try {
-            val response = api.getNobelPrizes(limit, year, category)
-
-            response.nobelPrizes.flatMap { prize ->
-                prize.laureates?.mapNotNull { laureate ->
-                    val name = laureate.knownName?.en
-                        ?: laureate.fullName?.en
-                        ?: return@mapNotNull null
-
-                    NobelPrize(
-                        id = laureate.id,
-                        awardYear = prize.awardYear,
-                        category = prize.category.en,
-                        categoryFullName = prize.categoryFullName.en,
-                        laureateName = name,
-                        motivation = laureate.motivation?.en,
-                        country = laureate.birth?.country?.en,
-                        portraitUrl = "https://picsum.photos/id/${laureate.id.toIntOrNull()?.rem(100) ?: 1}/200/200"
-                    )
-                } ?: emptyList()
-            }
+            val prizes = api.getPrizes()
+            Log.d("NobelDebug", "Получено премий: ${prizes.size}")
+            prizes.map { it.toDomain() }
         } catch (e: Exception) {
-            Log.e("NobelDebug", "Ошибка: ${e.message}", e)
+            Log.e("NobelDebug", "Ошибка: ${e.message}")
             emptyList()
         }
     }

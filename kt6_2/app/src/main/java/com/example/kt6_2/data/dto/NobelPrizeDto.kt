@@ -1,5 +1,6 @@
 package com.example.kt6_2.data.dto
 
+import com.example.kt6_2.domain.model.NobelPrize
 import kotlinx.serialization.Serializable
 
 import kotlinx.serialization.InternalSerializationApi
@@ -13,12 +14,14 @@ data class NobelPrizeResponse(
 @OptIn(InternalSerializationApi::class)
 @Serializable
 data class NobelPrizeDto(
+    val id: String,
     val awardYear: String,
-    val category: CategoryName,
-    val categoryFullName: CategoryName,
-    val prizeAmount: Int? = null,
-    val prizeAmountAdjusted: Int? = null,
-    val laureates: List<LaureateDto>? = null
+    val category: String,
+    val categoryFullName: String,
+    val laureateName: String,
+    val motivation: String? = null,
+    val country: String? = null,
+    val portraitUrl: String? = null
 )
 
 @OptIn(InternalSerializationApi::class)
@@ -82,3 +85,15 @@ data class NobelPrizeRefDto(
     val awardYear: String,
     val category: CategoryName
 )
+fun NobelPrizeDto.toDomain(): NobelPrize {
+    return NobelPrize(
+        id = id,
+        awardYear = awardYear,
+        category = category,
+        categoryFullName = categoryFullName,
+        laureateName = laureateName,
+        motivation = motivation,
+        country = country,
+        portraitUrl = portraitUrl
+    )
+}
